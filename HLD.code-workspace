@@ -1,0 +1,30 @@
+{
+  "folders": [
+    { "path": ".", "name": "HLD" }
+  ],
+  "settings": {
+    "editor.wordWrap": "on",
+    "editor.rulers": [100],
+    "markdown.preview.breaks": true,
+    "markdown.preview.typographer": true,
+    "files.associations": {
+      "*.md": "markdown"
+    },
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.patterns": {
+      "roadmap.md": "state.json, README.md",
+      "guide.md": "HLD.code-workspace"
+    },
+    "workbench.tree.indent": 16,
+    "markdown.extension.toc.updateOnSave": true
+  },
+  "extensions": {
+    "recommendations": [
+      "bierner.markdown-mermaid",
+      "bpruitt-goddard.mermaid-markdown-syntax-highlighting",
+      "yzhang.markdown-all-in-one",
+      "davidanson.vscode-markdownlint",
+      "anthropic.claude-code"
+    ]
+  }
+}

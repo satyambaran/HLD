@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "user": {
+    "baseline": "buzzwords-shallow",
+    "target": "SDE-2 interview-ready at top-tier tech",
+    "experienceYears": 4,
+    "startedAt": "2026-04-18"
+  },
+  "progressLegend": {
+    "0_untouched": "Untouched — not yet taught",
+    "1_intro": "Intro — taught once, quiz <60%",
+    "2_practiced": "Practiced — returned, 60-75%",
+    "3_confident": "Confident — 75-89% scenario-heavy",
+    "4_interview_ready": "Interview-ready — 90%+ with defended follow-ups"
+  },
+  "currentTopicId": null,
+  "lastSession": null,
+  "revisionQueue": [],
+  "sessionHistory": [],
+  "topics": [
+    { "id": "00", "phase": 0, "title": "What is HLD & napkin math", "slug": "what-is-hld", "notesPath": "notes/00-what-is-hld.md", "quizPath": "quizzes/00-what-is-hld.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "01", "phase": 0, "title": "Networking primer", "slug": "networking-primer", "notesPath": "notes/01-networking-primer.md", "quizPath": "quizzes/01-networking-primer.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "02", "phase": 1, "title": "SQL internals", "slug": "sql-internals", "notesPath": "notes/02-sql-internals.md", "quizPath": "quizzes/02-sql-internals.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "03", "phase": 1, "title": "NoSQL landscape", "slug": "nosql-landscape", "notesPath": "notes/03-nosql-landscape.md", "quizPath": "quizzes/03-nosql-landscape.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "04", "phase": 1, "title": "Replication", "slug": "replication", "notesPath": "notes/04-replication.md", "quizPath": "quizzes/04-replication.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "05", "phase": 1, "title": "Partitioning & sharding", "slug": "partitioning", "notesPath": "notes/05-partitioning.md", "quizPath": "quizzes/05-partitioning.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "06", "phase": 1, "title": "CAP, PACELC, consistency models", "slug": "cap-consistency", "notesPath": "notes/06-cap-consistency.md", "quizPath": "quizzes/06-cap-consistency.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "07", "phase": 1, "title": "DB comparison (MySQL/Postgres/Dynamo/Cassandra/Mongo/Neo4j)", "slug": "db-comparison", "notesPath": "notes/07-db-comparison.md", "quizPath": "quizzes/07-db-comparison.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "08", "phase": 2, "title": "Caching patterns & failure modes (thundering herd, stampede, hot keys)", "slug": "caching-patterns", "notesPath": "notes/08-caching-patterns.md", "quizPath": "quizzes/08-caching-patterns.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "09", "phase": 2, "title": "Redis deep dive", "slug": "redis-deep", "notesPath": "notes/09-redis-deep.md", "quizPath": "quizzes/09-redis-deep.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "10", "phase": 2, "title": "Memcached vs Redis", "slug": "redis-vs-memcached", "notesPath": "notes/10-redis-vs-memcached.md", "quizPath": "quizzes/10-redis-vs-memcached.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "11", "phase": 2, "title": "CDN & edge caching", "slug": "cdn-edge", "notesPath": "notes/11-cdn-edge.md", "quizPath": "quizzes/11-cdn-edge.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "12", "phase": 3, "title": "Queues vs pub/sub vs streams", "slug": "queues-vs-streams", "notesPath": "notes/12-queues-vs-streams.md", "quizPath": "quizzes/12-queues-vs-streams.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "13", "phase": 3, "title": "Kafka internals", "slug": "kafka-internals", "notesPath": "notes/13-kafka-internals.md", "quizPath": "quizzes/13-kafka-internals.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "14", "phase": 3, "title": "RabbitMQ, SQS/SNS, Pulsar", "slug": "rabbitmq-sqs-pulsar", "notesPath": "notes/14-rabbitmq-sqs-pulsar.md", "quizPath": "quizzes/14-rabbitmq-sqs-pulsar.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "15", "phase": 3, "title": "Delivery semantics & idempotency", "slug": "delivery-semantics", "notesPath": "notes/15-delivery-semantics.md", "quizPath": "quizzes/15-delivery-semantics.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "16", "phase": 4, "title": "Batch vs stream processing", "slug": "batch-vs-stream", "notesPath": "notes/16-batch-vs-stream.md", "quizPath": "quizzes/16-batch-vs-stream.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "17", "phase": 4, "title": "ETL/ELT & CDC", "slug": "etl-cdc", "notesPath": "notes/17-etl-cdc.md", "quizPath": "quizzes/17-etl-cdc.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "18", "phase": 4, "title": "Lambda & Kappa architectures", "slug": "lambda-kappa", "notesPath": "notes/18-lambda-kappa.md", "quizPath": "quizzes/18-lambda-kappa.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "19", "phase": 5, "title": "Consensus: Raft & Paxos", "slug": "consensus", "notesPath": "notes/19-consensus.md", "quizPath": "quizzes/19-consensus.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "20", "phase": 5, "title": "Leader election & leases", "slug": "leader-election", "notesPath": "notes/20-leader-election.md", "quizPath": "quizzes/20-leader-election.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "21", "phase": 5, "title": "Load balancing", "slug": "load-balancing", "notesPath": "notes/21-load-balancing.md", "quizPath": "quizzes/21-load-balancing.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "22", "phase": 5, "title": "Fault tolerance (breakers, retries, backpressure)", "slug": "fault-tolerance", "notesPath": "notes/22-fault-tolerance.md", "quizPath": "quizzes/22-fault-tolerance.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "23", "phase": 6, "title": "Rate limiting", "slug": "rate-limiting", "notesPath": "notes/23-rate-limiting.md", "quizPath": "quizzes/23-rate-limiting.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "24", "phase": 6, "title": "API design", "slug": "api-design", "notesPath": "notes/24-api-design.md", "quizPath": "quizzes/24-api-design.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "25", "phase": 6, "title": "Observability", "slug": "observability", "notesPath": "notes/25-observability.md", "quizPath": "quizzes/25-observability.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "26", "phase": 6, "title": "Security basics", "slug": "security-basics", "notesPath": "notes/26-security-basics.md", "quizPath": "quizzes/26-security-basics.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] }
+  ],
+  "caseStudies": [
+    { "id": "cs-01", "title": "URL shortener", "slug": "url-shortener", "path": "case-studies/url-shortener.md", "status": "not_started", "prereqPhases": [1, 2], "completedAt": null },
+    { "id": "cs-02", "title": "Rate limiter (distributed)", "slug": "rate-limiter", "path": "case-studies/rate-limiter.md", "status": "not_started", "prereqPhases": [2, 6], "completedAt": null },
+    { "id": "cs-03", "title": "Notification system", "slug": "notification-system", "path": "case-studies/notification-system.md", "status": "not_started", "prereqPhases": [3], "completedAt": null },
+    { "id": "cs-04", "title": "Twitter feed", "slug": "twitter-feed", "path": "case-studies/twitter-feed.md", "status": "not_started", "prereqPhases": [1, 2, 3], "completedAt": null },
+    { "id": "cs-05", "title": "WhatsApp / chat", "slug": "whatsapp", "path": "case-studies/whatsapp.md", "status": "not_started", "prereqPhases": [3, 5], "completedAt": null },
+    { "id": "cs-06", "title": "Uber ride matching", "slug": "uber", "path": "case-studies/uber.md", "status": "not_started", "prereqPhases": [1, 2, 3, 5], "completedAt": null },
+    { "id": "cs-07", "title": "YouTube / Netflix streaming", "slug": "video-streaming", "path": "case-studies/video-streaming.md", "status": "not_started", "prereqPhases": [2], "completedAt": null },
+    { "id": "cs-08", "title": "Distributed cache", "slug": "distributed-cache", "path": "case-studies/distributed-cache.md", "status": "not_started", "prereqPhases": [2, 5], "completedAt": null },
+    { "id": "cs-09", "title": "Google Drive / Dropbox", "slug": "dropbox", "path": "case-studies/dropbox.md", "status": "not_started", "prereqPhases": [1, 2, 3], "completedAt": null },
+    { "id": "cs-10", "title": "Payment system (idempotency + exactly-once + ledger)", "slug": "payment-system", "path": "case-studies/payment-system.md", "status": "not_started", "prereqPhases": [1, 3, 5], "completedAt": null },
+    { "id": "cs-11", "title": "Google Maps (geospatial + routing)", "slug": "google-maps", "path": "case-studies/google-maps.md", "status": "not_started", "prereqPhases": [1, 2], "completedAt": null },
+    { "id": "cs-12", "title": "Logging / Metrics system (at scale)", "slug": "logging-metrics", "path": "case-studies/logging-metrics.md", "status": "not_started", "prereqPhases": [3, 4, 6], "completedAt": null }
+  ]
+}
