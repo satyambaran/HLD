@@ -13,12 +13,25 @@
     "3_confident": "Confident — 75-89% scenario-heavy",
     "4_interview_ready": "Interview-ready — 90%+ with defended follow-ups"
   },
-  "currentTopicId": null,
-  "lastSession": null,
+  "currentTopicId": "00",
+  "lastSession": "2026-04-19",
   "revisionQueue": [],
-  "sessionHistory": [],
+  "sessionHistory": [
+    {
+      "date": "2026-04-19",
+      "command": "/hld-next",
+      "topicIds": ["00"],
+      "durationBucket": "deep",
+      "summaryBullets": [
+        "Taught topic 00: HLD framing + napkin math (latency numbers, QPS/storage/bandwidth decomposition, design loop).",
+        "Challenged buzzword intuitions: Redis-over-Postgres PK lookups only ~3× win; horizontal scaling always has a bottleneck; 1 Gbps = 125 MB/s.",
+        "Deep quiz: 8 mixed questions covering cache decision rules, bandwidth traps, rationale for napkin math, Uber-location streaming math, payments caching, logging LSM, Little's Law philosophy, global-chat SLA refutation.",
+        "Final 44/80 (55%) → level 1_intro. Strongest: Redis atomicity nuance (Q5), refutation use of latency (Q8). Weakest: streaming-workload modeling (Q4), replication-factor in storage (Q6)."
+      ]
+    }
+  ],
   "topics": [
-    { "id": "00", "phase": 0, "title": "What is HLD & napkin math", "slug": "what-is-hld", "notesPath": "notes/00-what-is-hld.md", "quizPath": "quizzes/00-what-is-hld.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "00", "phase": 0, "title": "What is HLD & napkin math", "slug": "what-is-hld", "notesPath": "notes/00-what-is-hld.md", "quizPath": "quizzes/00-what-is-hld.md", "level": "1_intro", "introducedAt": "2026-04-19", "lastPracticedAt": "2026-04-19", "sessionsSeen": 2, "quizScores": [{ "date": "2026-04-19", "type": "mixed-deep", "score": 44, "max": 80 }, { "date": "2026-04-19", "type": "spaced-revision", "score": 2, "max": 2 }] },
     { "id": "01", "phase": 0, "title": "Networking primer", "slug": "networking-primer", "notesPath": "notes/01-networking-primer.md", "quizPath": "quizzes/01-networking-primer.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
     { "id": "02", "phase": 1, "title": "SQL internals", "slug": "sql-internals", "notesPath": "notes/02-sql-internals.md", "quizPath": "quizzes/02-sql-internals.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
     { "id": "03", "phase": 1, "title": "NoSQL landscape", "slug": "nosql-landscape", "notesPath": "notes/03-nosql-landscape.md", "quizPath": "quizzes/03-nosql-landscape.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
