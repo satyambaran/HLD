@@ -322,3 +322,366 @@ EDNS0 extends UDP DNS to ~4096 bytes but IP fragmentation + DDoS amplification c
 - **Tracing / debugging scenarios (Q6) need explicit decomposition muscle.** Practice "attribute time to each layer."
 - Watch for cognitive fade around Q6-Q7 mark; consider shorter sessions or mid-session breaks.
 - Spaced revision worked within-session (Q8). Trust that rhythm.
+
+---
+
+## 2026-04-19 · Session 3 (Deep, /hld-next) — Part 2 cold quiz + Part 3 teach & quiz
+
+**Final: 48/90 (53%) → Level: 1_intro (unchanged)**
+
+Shape: 6 Qs on Part 2 (HTTP/1→2→3, cold — Part 2 was only written into notes previously, never tested). Then taught Part 3 (gRPC, WebSocket, SSE, long-polling). Then 3 Qs on Part 3, including a mid-quiz pivot where learner flagged that Q9 tested a mechanism (gRPC deadline propagation) I'd name-dropped but not taught. Deep-dive delivered, question re-posed, answered correctly.
+
+---
+
+### Q1 · MCQ + why — HTTP/2 transport-layer HoL
+
+**Question (verbatim as posed):**
+> You have a single HTTP/2 connection multiplexing 10 concurrent streams (S1...S10) between a browser and your origin. Mid-flight, **one IP packet carrying frames for stream S3 is dropped on the network**. The packet is eventually retransmitted ~150ms later.
+>
+> Which of the following best describes what happens to the *other* streams (S1, S2, S4...S10) during that 150ms gap?
+>
+> - **A)** They proceed normally — HTTP/2's stream multiplexing isolates each stream, so loss on S3 only affects S3.
+> - **B)** They stall completely — TCP enforces in-order byte delivery across the whole connection, so frames for S1, S2, S4...S10 that arrived after the gap sit in the kernel buffer and are not delivered to the app until S3's retransmit fills the hole.
+> - **C)** They proceed at half throughput — TCP's congestion window halves on detected loss (AIMD), so all streams share the reduced bandwidth but none are blocked.
+> - **D)** Only streams whose IDs are lower than 3 (i.e., S1, S2) are blocked, because HTTP/2 stream prioritization preserves ordering for lower IDs.
+>
+> **Pick one and justify.** What's wrong with each of the wrong options? Bonus: name the HTTP/3 mechanism that fixes this.
+
+**Learner's answer:**
+> A: incorrect, it doesnt isolate the streams
+> B: correct
+> C: all of them are acked and blocked, they are not deleivered to app
+> D: incorrect, this ordering is not forced(it was in http/1 but not in http/2)
+
+**Score: 8/10**
+
+**Strong:**
+- Correct pick
+- **Nailed the subtle ACK≠deliver distinction on C** — packets are ACKed at TCP layer (often via SACK), kernel withholds from app to preserve in-order delivery. That's the staff-level insight.
+
+**Gaps:**
+- A justification correct but loose — sharper: H2 isolates at the *framing* layer (frames tagged with stream IDs interleave on wire), but the underlying byte stream is still one TCP connection which is where HoL bites
+- D: H2 priority is a hint-based dependency tree (RFC 7540 §5.3); no "lower-ID-first" guarantee ever existed in any HTTP version
+- **Missed bonus:** QUIC maintains sequence numbers **per stream**, not per connection. Each stream's bytes are ordered independently in QUIC's reassembly buffer — loss on stream A only stalls stream A.
+
+---
+
+### Q2 · Short-answer — Why QUIC picked UDP
+
+**Question (verbatim as posed):**
+> Google built QUIC on top of **UDP** rather than designing a brand-new transport protocol or extending TCP. People often summarize this as "UDP is faster" — but that's a buzzword answer.
+>
+> **Give the real reason in 2-3 sentences.** Specifically:
+> 1. What forced QUIC to live in *userspace* rather than the kernel?
+> 2. Why was a new TCP-like protocol (a fresh IP protocol number) considered impractical?
+>
+> Hint: the words "ossification" and "middlebox" should appear in any good answer.
+
+**Learner's answer:**
+> Kernel's TCP stack enforced strict in-order byte delivery across the whole connection, that's why they didnt try to extend tcp. TCP is implemented in the OS kernel and changes would require every OS(mac windows linux android, ios) to update. Even middlebox ossification about the TCP packet shape and all breaks the middleboxes like NATs firewalls etc.
+
+**Score: 7/10**
+
+**Strong:** Got both kernel ossification and middlebox ossification clearly.
+
+**Gap — missed the third leg: protocol-number ossification.**
+- You might think "skip TCP, invent a new transport with a fresh IP protocol number (like SCTP = 132)." Doesn't work — most home routers, corporate NATs, ISP firewalls drop any IP packet that isn't TCP (6), UDP (17), or ICMP (1). SCTP is effectively unroutable on the public internet.
+- UDP is the only viable "escape hatch" — universally permitted, thin-enough kernel abstraction that real protocol work happens in userspace above it.
+
+**Also small conflation:** in-order delivery is the *motivation* (problem QUIC wanted to fix), not the *deployment constraint* (why UDP + userspace). Keep those two separate.
+
+**Clarification asked later (taught):** full userspace-vs-kernel breakdown with TCP-in-kernel vs QUIC-in-app-process, including CPU cost, iteration-speed wins, tooling maturity trade-offs.
+
+---
+
+### Q3 · Scenario — Protocol pick for consumer video-calling mobile app
+
+**Question (verbatim as posed):**
+> You're the tech lead on a **consumer video-calling mobile app** (think: next-gen FaceTime / WhatsApp video). Clients are ~70% cellular, ~30% Wi-Fi. Users commonly walk out of a Wi-Fi zone onto cellular mid-call. Packet loss on mobile averages 1-3%, spikes to 10%+ in poor coverage.
+>
+> Your architecture already has:
+> - Mobile app → CDN edge (TLS-terminating) → origin API (REST + gRPC)
+> - A separate media path for the actual audio/video frames (RTP over UDP)
+>
+> **Question:** For the **control/signaling channel** (login, presence, call-setup RPCs, metadata) between the mobile app and your edge — which protocol would you pick: **HTTP/1.1, HTTP/2, or HTTP/3**? Justify with at least **three** distinct technical reasons tied to the scenario (the specifics: lossy network, mobility, signaling workload). Also name **one downside** you're knowingly accepting.
+
+**Learner's answer:**
+> I would pick HTTP/3 as it uses QUIC which handles the connection change of user very swiftly in case of lossy networkm mobility and signaling workload). Downsides are higher cpu cost(userspace udp stack) along with some places udp often gets blocked/throttled.
+
+**Score: 4/10**
+
+**Picked right, gave one distinct technical reason (connection migration) with the rest implied by the prompt's own words.** "Three distinct technical reasons tied to scenario" was the explicit ask — each claim needs a specific mechanism.
+
+**Ideal three mechanism-grounded reasons:**
+1. **Connection migration** — QUIC IDs connection by opaque connection ID, not 4-tuple. Wi-Fi → cellular IP change doesn't kill the connection; client sends packet from new IP with same connection ID. No 200-500ms blackout, no re-handshake, no re-auth.
+2. **Per-stream ordering eliminates transport HoL on lossy paths** — at 1-3% loss, H2 over TCP routinely stalls every multiplexed signaling RPC behind one lost packet. QUIC's per-stream sequencing means a stalled presence ping has zero impact on a call-setup RPC.
+3. **Integrated 1-RTT (or 0-RTT) handshake** — TCP + TLS 1.3 = 2 RTTs; QUIC = 1 RTT (or 0 with PSK). On cellular RTTs of 80-200ms, saves 80-200ms every reconnect.
+
+**Full downside set:** CPU/battery on mobile; UDP blocking on enterprise Wi-Fi; tooling immaturity; edge→origin is still H2/TCP so H3 wins only apply on client→edge leg.
+
+---
+
+### Q4 · Short-answer — HTTP/2 Server Push deprecation
+
+**Question (verbatim as posed):**
+> Many old design articles and even some interview prep material still recommend **HTTP/2 Server Push** as a way to "send critical resources to the client before they ask for them" — e.g., pushing `style.css` and `app.js` along with the response to `/index.html`.
+>
+> **Why was Server Push effectively deprecated** (Chrome disabled it by default in 2022, and HTTP/3 dropped it from the spec)? Be specific about the **mechanism** that broke, not just "it didn't work well."
+>
+> Then: **what replaced it** for the legitimate use case of "tell the client about resources it'll need before the main response is ready"? Name the HTTP status code and what it's called.
+
+**Learner's answer:**
+> It used to push some might be needed resources even before client has asked(there might be some scenario where it could be cached already and not needed) and banwidth got wasted. Mechanism which replaced it is `103` `Early Hints` sends preload link before sending full response is ready
+
+**Score: 6/10**
+
+**Got:** Symptom (wasted bandwidth on cache hits) and named `103 Early Hints` correctly.
+
+**Missed the deeper mechanism:**
+- **Server has no way to know client cache state.** No protocol-level mechanism for browser to tell server "I already have style.css v3.7" before requesting /index.html. Push is forced binary lose-lose: always push (waste on cache hits) or don't push (defeats purpose).
+- **Browser cache ↔ push-stream matching was buggy across implementations.** Pushed streams sat in "unclaimed pushes" buffer; browser matched on HTML parse. Led to double-fetch bugs (browser fetches the same resource a push is in-flight for).
+
+**Why Early Hints is the right fix:** it's a *hint*, not data. `Link: </style.css>; rel=preload` in a 103 interim response → client does its own cache check (client knows what it has) → only fetches if needed. Decision lives on the cache-aware side.
+
+Pattern to internalize: **push a hint, not the bytes** — let the cache-holder decide.
+
+---
+
+### Q5 · Scenario — When HTTP/1.1 wins: service mesh
+
+**Question (verbatim as posed):**
+> You're designing a **service mesh** for an internal microservice architecture: ~200 services, all running inside the same datacenter / VPC, behind mTLS. Average request size: 4 KB request, 10 KB response. Median network loss between services: <0.01% (essentially zero). RTT between services: 0.5-2 ms.
+>
+> Your platform team is debating whether the mesh sidecar (e.g., Envoy / Linkerd-proxy) should default to **HTTP/1.1 with keep-alive + connection pooling** or **HTTP/2** for service-to-service traffic.
+>
+> **Argue the case for HTTP/1.1 here.** What about *this specific environment* erodes HTTP/2's usual advantages? Give at least **two** technical reasons. Then state under what condition you'd flip the recommendation back to HTTP/2.
+>
+> (Hint: think about what HoL blocking, multiplexing, and HPACK each *cost* — not just what they buy.)
+
+**Learner's answer:**
+> Not sure
+
+**Score: 0/10** (no attempt — contrarian question, kept the honest admission)
+
+**The argument structure to internalize: every H2 advantage has a precondition that may not hold here.**
+
+**H2's usual wins eroded:**
+1. **Multiplexing's value is gone** — sidecar already pools 20-50 long-lived H1.1 connections per upstream. Parallelism exists. Multiplexing 50 streams on one conn vs 50 parallel H1.1 conns in clean DC is a wash.
+2. **HPACK saves nothing here** — internal service-to-service reqs have 200-500B of headers (trace ID, auth token). 80% compression on 300B = 240B saved on 14KB exchange = 2% bandwidth.
+3. **No HoL fix needed** — at <0.01% loss, multiplexing-over-TCP's HoL vs pipelined-H1.1's HoL never actually bites.
+
+**What H2 *costs* you:**
+4. **Bigger blast radius on connection failure** — H1.1 + 20-conn pool, one dying = 1/20 requests fail. H2 multiplexing 200 streams on 1 TCP = 200 streams die together.
+5. **Flow-control complexity = prod bugs** — H2 per-stream WINDOW_UPDATE math has caused grpc-go, nginx, Envoy CVEs/deadlocks.
+6. **CPU in sidecar** — H2 framing, HPACK, stream state, pings cost measurable CPU at 100K req/s.
+7. **L4 LB distributes less evenly** — 1 H2 connection carrying 200 streams lands all load on one backend; 200 H1.1 conns spread across 20 backends.
+
+**Flip back to H2 when:** gRPC (mandatory H2), long-lived streaming RPCs, bidi patterns, genuinely-big headers (heavy auth tokens + trace baggage).
+
+**Interview tell:** direction of reasoning matters more than conclusion. "H1.1 is fine intra-DC because H2's preconditions don't apply" sounds staff-level; "always H2" sounds junior.
+
+---
+
+### Q6 · Spaced revision — Napkin math (topic 00)
+
+**Question (verbatim as posed):**
+> Pulling from your weakest area on topic 00 (streaming-workload modeling).
+>
+> **Scenario:** You're sizing capacity for an Uber-style location-tracking service.
+> - 5 million active drivers worldwide at peak
+> - Each driver's app emits its GPS location **every 4 seconds** while driving
+> - Each location update payload: 200 bytes (driver_id + lat + lng + heading + speed + timestamp + protobuf overhead)
+> - The locations are written to a hot store (Redis Geo) and tee'd to a Kafka topic for downstream analytics
+>
+> **Compute the following — show your math, don't just give numbers:**
+>
+> 1. **Write QPS** to the hot store (per second, peak).
+> 2. **Ingress bandwidth** at the location-ingest service (in MB/s and Mbps — both, please).
+> 3. **Daily storage** if every event is durably retained on Kafka for 7 days (assume no compression).
+> 4. **Replication factor of 3** on Kafka — what does that do to the storage number?
+>
+> Then: **one design observation.** Looking at your numbers, what's the *first* bottleneck you'd worry about, and why?
+
+**Learner's answer:**
+> DAU=5M, driver app emit rate =1/4s, payload = 200B.
+> assuming average ride duration 25 mins, number of rides per day = 30
+> peak=3*average
+>
+> bandwidth = 5M*30*(25*60)/86400/4 * 200 B = 150M*1500*50B/86400 = 1.5*1.5*5/86.4 GBps = 125 MBps
+> peak bandwidth = 375 MBps
+>
+> peak qps = 375MBps/0.2KB = 375*5*1000 qps = 1.7M qps
+>
+> Daily storage = 125MBps*86400*7  = 12 TB for each day*7
+>  = near 100 TB
+>
+> With replication factor =3, storage needed will be around 300TBmm
+
+**Score: 5/10**
+
+**Strong:** Used average for storage (not peak) — key conceptual win most candidates miss. Implicit Little's Law in deriving average concurrent drivers. RF × storage math right.
+
+**Gaps:**
+- **Misread prompt.** "5M active at peak" is already the peak concurrent number. No need to derive from DAU × rides × duration. In interview this wastes 4-5 min + compounds error.
+  - Clean read: 5M ÷ 4s = **1.25M peak QPS**
+- **Missed Mbps conversion** (question asked for both MB/s and Mbps): 250 MB/s × 8 = **2,000 Mbps = 2 Gbps**
+- **Arithmetic slip:** 375 ÷ 0.2 = 1,875K, not 1.7M
+- **No design observation.** Whole point of napkin math is to drive a design decision.
+
+**Ideal design observation:** Bandwidth and storage are trivially horizontal. **Real bottleneck: Redis Geo hot-key writes.** GEOADD is single-threaded per shard; at 1.25M writes/sec needs 10+ shards. Events cluster geographically (Manhattan 6pm) → naive geohash sharding creates hotspots. Picking the shard dimension (driver_id hash vs S2 cell vs hybrid) **is the design problem**; numbers are a sanity check.
+
+---
+
+### Q7 · MCQ + why — Protocol for LLM streaming API
+
+**Question (verbatim as posed):**
+> You're building the streaming API for a **large language model product** (think ChatGPT / Claude). The core UX: user sends a prompt (single HTTP request), and the model streams response tokens back as they're generated — a user sees text appearing character-by-character. Typical stream: 500-2000 tokens over 3-15 seconds. Clients are browsers (web app) and mobile SDKs.
+>
+> Which protocol would you pick for the streaming response channel?
+>
+> - **A)** WebSocket — because tokens are streaming in real-time and WebSocket is the default real-time choice.
+> - **B)** Server-Sent Events (SSE) — because the direction is one-way (server → client), it's plain HTTP so it passes through CDNs/proxies/corporate firewalls, and auto-reconnect with resume is browser-native.
+> - **C)** gRPC server-streaming — because typed Protobuf contracts are strictly better than loose JSON, and H2 multiplexing handles parallel chats.
+> - **D)** Long-polling — because it's the simplest and most universally compatible option.
+>
+> **Pick one and defend it on at least two axes.** Then: give one concrete reason each wrong option loses to your pick — not just "it's worse." Bonus: what specific HTTP response header is essential for this to work over a reverse proxy like nginx?
+
+**Learner's answer:**
+> B SSE:- It's oneway(server->client), supports auto-reconnect(in case of connection breaks). Users payload are once in a while events, can be handled by sepearate http post request. gRPC has no retry loogic. Long polling is not usable because LLMs usually takes some time and then sends a burst of tokens(bursty traffic)
+>
+> My choice SSE provides Last-Event-Id for retry in case of connection break and also we need only oneway connection. Response header Content-Type: text/event-stream.
+
+**Score: 7/10**
+
+**Strong:** Correct pick. Two solid axes (one-way + auto-reconnect). Nice observation that user prompt rides a separate POST.
+
+**Gaps:**
+- **Long-polling rationale off-target.** It handles bursts fine (holds conn, responds when data). *Real* reason it loses: 500-2000 tokens via long-poll = 500-2000 HTTP round trips per prompt to preserve token-by-token UX. Batching kills the real-time feel.
+- **gRPC rationale imprecise.** gRPC *does* have retry/deadline mechanisms. Real reasons: browsers only speak gRPC-Web (subset); no native reconnect/resume for gRPC streams; Protobuf codegen overkill for streaming text; JSON-over-SSE is the ecosystem default for LLM APIs.
+- **Bonus partial credit.** `Content-Type: text/event-stream` IS essential for browser to treat it as SSE. But the *proxy-specific* gotcha is **response buffering**. Nginx default buffers proxy responses in 4-8KB chunks → user sees nothing for seconds, then bursts.
+  - Per-response fix: `X-Accel-Buffering: no`
+  - Server-config fix: `proxy_buffering off;`
+  - Also: `Cache-Control: no-cache` to prevent intermediate caching.
+
+---
+
+### Q8 · Scenario — WebSocket collab-editor scaling
+
+**Question (verbatim as posed):**
+> You're the tech lead on a **real-time collaborative editor** (think Google Docs / Figma). At scale: **5 million concurrent connected users globally**, editing documents with 1-30 collaborators each. Clients send keystrokes + cursor positions; server broadcasts operational transforms to all collaborators on that document. You've picked **WebSocket** (correctly — it's bidi, low per-message overhead, classic use case).
+>
+> Your naive first architecture:
+> ```
+> clients ───► L7 LB (AWS ALB) ───► WS fleet (100 hosts, 50K conns each)
+>                                        │
+>                                        └─► in-process pub/sub: each host holds
+>                                            the doc state for connections on it
+> ```
+>
+> Problem: users on document `D` whose WebSocket connections land on *different* hosts can't see each other's edits. Host A has 3 users on doc D; host B has 2 users on doc D. Host A doesn't know about host B's users.
+>
+> **Walk me through the fix.** Specifically:
+> 1. What component do you introduce between the WS hosts to make edits fan out across the fleet?
+> 2. What's the ordering/consistency guarantee you need (think about OT / CRDT)?
+> 3. What's the blast radius when one of your 100 WS hosts dies — how many users reconnect, to where, and what do they re-sync from?
+> 4. Name one thing about WebSocket that makes graceful deploys (rolling restarts) harder than for stateless HTTP services.
+>
+> Don't over-engineer. 4-6 sentences per sub-question max.
+
+**Learner's answer:**
+> There should be central component which merges the documents of host A and host B. Later send it to respective WS which will send to users.
+>
+> We can use operational transformation in the central component to acheive eventual consistency.
+>
+> When one of our host from WS fleet dies, near 50K users gets affected. After disconnecting they can try reconnect using the same http api call to existing host nodes or the new nodes which gets provisioned and later it will get upgraded in websockets. Newly provisioned host will fetch the truth from the central component.
+>
+> not sure
+
+**Score: 4/10**
+
+**Right shape on answered parts, missing concrete mechanism on every one.**
+
+**Sub-1 — fan-out:** "central component" conflates two things. Standard architecture: **(a) Doc server** (sharded by doc_id, owns OT/CRDT state, single-writer per doc) + **(b) Pub/sub layer** (Redis pub/sub / Kafka / Pulsar) for fanout across WS hosts. You missed pub/sub explicitly — without it, doc server would have to know which WS host has which user (unwanted coupling).
+
+**Sub-2 — ordering:** OT named correctly. Missed: **per-document ordering must be preserved end-to-end.** Pub/sub must support per-key ordering (Kafka with partition-by-doc-id, Redis Streams per doc). Naive Redis pub/sub doesn't preserve ordering. Right term is **strong eventual convergence**, not plain eventual consistency.
+
+**Sub-3 — blast radius:** right headline. Missed:
+- Re-sync from **version cursor**, not from scratch. Client tracks last-seen op version; on reconnect sends `last_seen_op=V`; doc server replays V+1...current.
+- **Reconnect storm** — 50K simultaneous reconnects melt auth + doc server + pub/sub. Mandatory **exponential backoff with jitter** client-side.
+- **Cold-cache thundering herd on new host** — 50K reconnects → 50K doc-server lookups on empty cache. DDoSes doc server. Mitigation: gradual connection allocation, doc-server cache + request coalescing.
+
+**Sub-4 — graceful deploys:** This is the #1 operational pain of WebSocket at scale.
+- WS connections are long-lived (hours); stateless HTTP deploys via 30-60s drain. WS has no equivalent.
+- Two bad choices: **hard close** (50K reconnect storm) or **drain** (could take hours, blocks deploy).
+- Production fix is a combination: (a) server sends in-band `{"action":"reconnect"}` message *before* close, (b) restart 5-10% of fleet at a time with settle time between waves, (c) client implements randomized backoff, (d) LB-level blue/green, (e) stateless reconnection via pub/sub + version cursors means any host can pick up any client.
+
+---
+
+### Q9 · Short-answer — gRPC deadline propagation
+
+**Question (verbatim as posed, first attempt):**
+> Your team is migrating an internal Java microservice from REST/JSON to gRPC. After the migration, you notice a strange production incident: **service A's deadlines aren't being respected by downstream service C**. Specifically, A calls B with a 200ms deadline; B calls C; C runs for 500ms with no error; A times out and retries; but C continues executing the original request anyway, doing duplicate work.
+>
+> **Two-part question:**
+>
+> 1. What is gRPC's mechanism for **deadline propagation** supposed to do here, and why isn't it working in this scenario? Specifically, what is the gRPC metadata header involved, and what does each service in the chain do with it?
+> 2. What's the most likely **bug** causing C to ignore the deadline? (Hint: it's not a missing header — it's about *how the application code uses the deadline once it receives it*.)
+
+**Learner's first-attempt answer (verbatim — including the feedback that drove the pivot):**
+> It's probably deadline is not propagating correctly.
+>
+> I feel like you are asking question which you have not taught me yet. I like the questions' level but concept teching input is low.
+
+**Pivot action taken (mid-quiz, by teacher):**
+- Acknowledged feedback as valid — Q9 tested mechanism (`grpc-timeout` wire format, Context propagation, thread-hopping bug) that was only name-dropped in Part 3 notes, not taught with internals depth.
+- Saved feedback memory `feedback_quiz_teaching_density.md` to enforce the rule going forward: every quiz question must test a mechanism that was actually taught with depth.
+- Delivered inline mini-deep-dive in chat covering: (a) `grpc-timeout` header format `<int><unit>` (e.g., `200m` = 200ms; units H/M/S/m/u/n), (b) per-hop subtraction of elapsed time, (c) `Context.current().getDeadline()` in gRPC-Java, (d) the canonical broken pattern (`executor.submit(...)` without `Context.current().wrap(...)` strips deadline from new thread's empty Context), (e) the fix patterns (`Context.current().wrap(runnable)` or explicit `cStub.withDeadline(deadline)`), (f) deadline-as-signal-not-kill (must wire into JDBC `setQueryTimeout`, HTTP client read timeouts, periodic `Context.current().isCancelled()` checks in CPU loops), (g) retry × idempotency interaction (even with perfect propagation, A's retry can race C's still-running original → idempotency keys still required for mutating RPCs).
+- Re-posed the same Q9 with the mechanism now on the table.
+
+**Question (re-posed, verbatim):**
+> Re-posing the question with the same setup:
+>
+> **Scenario recap:** A calls B with 200ms deadline; B calls C; C runs for 500ms; A retries; C keeps running the original.
+>
+> 1. What is the gRPC metadata header involved, and what does each service do with it?
+> 2. What's the most likely application bug causing C to "ignore" the deadline?
+>
+> Take a fresh swing now that the mechanism is on the table.
+
+**Learner's post-teach answer (verbatim):**
+> grpc-timeout, they need to follow what they have receive and forward it's updated values to the next server.
+>
+> B not propagating grpc-timeou
+
+**Score: 7/10** (post-teach — first attempt was discounted as the teaching-density issue was on the teacher, not the learner)
+
+**Correct on both parts, tersely.**
+
+**Q1 sharpening:** Framework reads `Context.current().getDeadline()` (deserialized from inbound `grpc-timeout`) and serializes remaining time into outbound `grpc-timeout` — *if Context is propagated correctly across the call.*
+
+**Q2 sharpening:** Most common cause = **thread-hopping**. B's handler dispatches downstream call via `executor.submit(...)` without `Context.current().wrap(...)`; new thread's `Context.current()` is the empty JVM-default with no deadline → outbound stub has nothing to encode → C receives no `grpc-timeout` → framework has nothing to cancel. Other variants: explicit stub without `withDeadline(...)`, deadline lost across reactive / CompletableFuture chains.
+
+**Validation of the teach-then-test pivot:** learner went from "I'd guess deadline isn't propagating" (pre-teach) to nailing both parts (post-teach) — exactly the intended outcome. Also a strong meta-signal: knowing what you don't know and naming the gap is interview-ready behavior on its own.
+
+---
+
+## Session rollup
+
+### Strongest
+- **Q1 (H2 transport HoL):** nailed the subtle ACK≠deliver distinction — 8/10
+- **Q7 (LLM streaming SSE):** correct pick with good auto-reconnect insight — 7/10
+- **Q9 (post-teach):** locked the feedback loop — correct diagnosis after deep-dive — 7/10
+- **Self-awareness:** correctly flagged that Q9 tested a mechanism not adequately taught → drove the only memory save of the session
+
+### Weakest
+- **Q5 (H1.1 in service mesh):** no attempt. Contrarian questions about when older protocol wins need explicit practice.
+- **Q8 sub-4 (WS graceful deploys):** no attempt. Worth standalone deep-dive.
+- **Q3 (video-calling scenario):** "three distinct technical reasons" requirement not met — pattern of relying on scenario words instead of specific mechanisms.
+- **Q6 (napkin math):** misread "5M at peak" as DAU → overcomplicated the problem. Also forgot Mbps conversion.
+
+### Notes for next session
+- **Pattern to watch:** when a question asks "give N technical reasons," each needs a named mechanism, not a restatement of scenario words.
+- **Deep dives queued:** WebSocket at scale (connection migration ≠ WS; WebTransport; reconnect storms; graceful deploy patterns). gRPC Java production patterns (Context, interceptors, deadline propagation, retry policies).
+- **Interview drill:** read prompt units carefully — "active at peak" vs DAU is a recurring trap.
+- **Spaced revision landed** on napkin math (topic 00) but showed the same "over-derive" failure mode. Worth another targeted rep on input-parsing.
+
