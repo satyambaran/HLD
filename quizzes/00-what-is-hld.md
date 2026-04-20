@@ -98,7 +98,7 @@ Three ideas: **irreversibility** + **wrong-foundation failure mode** + **forcing
 **Learner's answer:**
 > DAU = 100M, update frequency per 3 seconds, payload 500B, peak multiplier 4x, daily rides = 3 per user.
 > peak qps = 100M*3*4/100000 = 12000 qps
-> peak bandwidth = 500B*12000*2(rider and driver)/3 = 500B*8000 = 4MB/s
+> peak bandwidth = 500B * 12000 * 2(rider and driver)/3 = 500B*8000 = 4MB/s
 > Can't think of any architectural implication.
 
 **Score: 4/10**
@@ -259,3 +259,49 @@ This is why Cassandra, Elasticsearch, ClickHouse dominate logging while Postgres
 **Learner's answer:** 0.5ms ✓
 
 **Score: 2/2** — ⭐ Recalibrated correctly after the earlier Q2 slip (same session) where 70ms was mistakenly used for same-DC. Spaced repetition worked within-session.
+
+---
+
+## 2026-04-20 · Session 4 (spaced revision during topic 01 consolidation)
+
+### Q9 of consolidation quiz — Napkin math input-parsing discipline
+
+**Question (verbatim):**
+> Event ingestion pipeline, mobile game.
+> - 1B events/day globally
+> - Payload: 200 bytes
+> - Peak-to-average ratio: 5x
+> - Retention: 30 days
+> - Replication factor: 3
+>
+> 1. Peak QPS (ingestion)?
+> 2. Peak ingress bandwidth (MB/s + Gbps)?
+> 3. Total raw storage (TB) for 30 days, accounting for replication?
+
+**Learner's answer (verbatim):**
+> Event per day = 1B
+> Events per second = 1B/86400 = 1M/86.4 = 12K (qps)
+> Peak qps = 5*12K = 60K per second
+> Avg Bandwidth(ingestion) = 12K qps * 200 Bytes = 2.4 MB/s
+> Peak Bandwidth = 5*2.4 = 12MB/s = 96 Mbps = 0.1 Gbps
+> Storage for 30 days (w/o replication)  = 30*1B*200bytes = 6 TB
+> Storage with replication = 3*6TB = 18TB
+
+**Score: 9/10**
+
+**⭐ The exact rep the revision queue was demanding.** Prior failure mode (misreading "at peak" as DAU, over-deriving from DAU × rides × duration) explicitly avoided. Clean:
+- Parsed 1B as daily volume, not peak
+- Applied 5× peak multiplier to *rate* metrics (QPS, bandwidth) — not to storage
+- Used total events (30B) for storage — not peak × seconds
+- Byte→bit conversion correct (×8 for MB/s → Mbps, further /1000 for Mbps → Gbps)
+- Replication factor applied only to storage, not to bandwidth/QPS
+
+**Minor polish notes (non-correction):**
+- Storage in production: add 20-30% overhead for metadata/indexes/compaction → 18TB raw → ~25TB provisioned
+- Cost framing: 18TB × $100/TB/mo hot SSD ≈ $1,800/mo for 30-day; tier to Glacier at $0.004/GB for deeper retention
+
+### Outcome for topic 00
+
+- Revision queue: **CLEARED** for topic 00.
+- Level transition: `1_intro` → `2_practiced` (scored in the 4_interview_ready band on spaced revision, but per mastery rule "never skip levels" → up by 1 = `2_practiced`).
+- Pattern locked: input-parsing discipline — read prompt units carefully, don't derive what's already given.

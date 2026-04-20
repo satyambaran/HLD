@@ -7,8 +7,8 @@
 
 ## Phase 0 — Foundations
 
-- [~] **00** · [What is HLD & napkin math](notes/00-what-is-hld.md) — QPS, latency numbers every engineer should know, back-of-envelope sizing
-- [~] **01** · [Networking primer](notes/01-networking-primer.md) — HTTP/1.1 vs HTTP/2 vs HTTP/3, TCP, DNS, TLS, gRPC, WebSocket *(All 3 parts taught: TCP+DNS+TLS / HTTP versions / gRPC+WebSocket+SSE — needs Practiced score to advance)*
+- [~] **00** · [What is HLD & napkin math](notes/00-what-is-hld.md) — QPS, latency numbers every engineer should know, back-of-envelope sizing *(Practiced — input-parsing discipline locked)*
+- [~] **01** · [Networking primer](notes/01-networking-primer.md) — HTTP/1.1 vs HTTP/2 vs HTTP/3, TCP, DNS, TLS, gRPC, WebSocket *(All 3 parts taught. Consolidation quiz 48.9% — missed Practiced. Deep-dive queued on: Anycast/BGP, WebSocket Close frames + graceful deploy, mesh LB granularity with H/2.)*
 
 ## Phase 1 — Storage
 

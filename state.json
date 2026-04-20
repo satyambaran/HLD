@@ -14,8 +14,8 @@
     "4_interview_ready": "Interview-ready — 90%+ with defended follow-ups"
   },
   "currentTopicId": "01",
-  "lastSession": "2026-04-19",
-  "revisionQueue": ["00"],
+  "lastSession": "2026-04-20",
+  "revisionQueue": [],
   "sessionHistory": [
     {
       "date": "2026-04-19",
@@ -52,11 +52,24 @@
         "Final 48/90 (53%) → stays at 1_intro. ⭐ Strongest: H2 transport HoL ACK≠deliver insight (Q1, 8/10), self-awareness on teaching gap (Q9 pivot). Weakest: contrarian H1.1-in-mesh question (Q5, 0/10 — no attempt), WebSocket graceful-deploy mechanism (Q8 sub-4, no attempt), 'three distinct technical reasons' pattern (Q3 relied on scenario words instead of named mechanisms), napkin-math prompt-misread (Q6: parsed '5M at peak' as DAU).",
         "Topic 00 napkin-math revision (Q6) showed the same 'over-derive' failure mode as last session — added topic 00 back to revisionQueue. Pattern: input-parsing discipline needs a targeted rep."
       ]
+    },
+    {
+      "date": "2026-04-20",
+      "command": "/hld-next",
+      "topicIds": ["01", "00"],
+      "durationBucket": "deep",
+      "summaryBullets": [
+        "Consolidation quiz on topic 01 (all 3 parts mixed) aimed at pushing 1_intro → 2_practiced. 9 Qs: 8 on topic 01, 1 spaced revision on topic 00 napkin math. Final 44/90 (48.9%) → topic 01 stays 1_intro (missed Practiced threshold by ~10pp).",
+        "⭐ Topic 00 spaced-revision Q9 (napkin math): 9/10. Input-parsing failure mode from prior two sessions explicitly avoided — clean read of '1B events/day', correct 5× peak multiplier applied to rate (not storage), byte↔bit conversion correct, replication applied only to storage. Topic 00: 1_intro → 2_practiced, off revision queue.",
+        "Strongest (topic 01): Q7 gRPC deadline propagation (7/10 — mechanism owned post-teach from last session, named Context.current() and thread-hopping bug), Q2 DNS failover pooled-H2 (6/10 — right pick and right cohort-size reasoning).",
+        "Weakest: Q4 WebSocket graceful deploy (3/10 — invented app-level JSON instead of naming Close frame 0x8 / code 1001 Going Away), Q8 Anycast (3/10 — completely missed the industry-standard BGP-based failover mechanism), Q5 H1.1 in mesh (4/10 — named HoL blocking, missed the dominant reason: L4 LB granularity with H/2 pinning).",
+        "Pattern still leaking: named-mechanism vs scenario-words. Q3 conflated QUIC connection migration with 0-RTT resumption; Q4 invented JSON frame; Q8 gestured at 'resolver should signal' instead of naming Anycast. Immediate next: /hld-deepdive 01 targeting Anycast/BGP, WebSocket Close frames + graceful deploy mechanics, and service-mesh LB granularity."
+      ]
     }
   ],
   "topics": [
-    { "id": "00", "phase": 0, "title": "What is HLD & napkin math", "slug": "what-is-hld", "notesPath": "notes/00-what-is-hld.md", "quizPath": "quizzes/00-what-is-hld.md", "level": "1_intro", "introducedAt": "2026-04-19", "lastPracticedAt": "2026-04-19", "sessionsSeen": 3, "quizScores": [{ "date": "2026-04-19", "type": "mixed-deep", "score": 44, "max": 80 }, { "date": "2026-04-19", "type": "spaced-revision", "score": 2, "max": 2 }, { "date": "2026-04-19", "type": "spaced-revision", "score": 5, "max": 10 }] },
-    { "id": "01", "phase": 0, "title": "Networking primer", "slug": "networking-primer", "notesPath": "notes/01-networking-primer.md", "quizPath": "quizzes/01-networking-primer.md", "level": "1_intro", "introducedAt": "2026-04-19", "lastPracticedAt": "2026-04-19", "sessionsSeen": 2, "quizScores": [{ "date": "2026-04-19", "type": "mixed-deep-part1", "score": 40, "max": 80 }, { "date": "2026-04-19", "type": "mixed-deep-part2-and-part3", "score": 43, "max": 80 }] },
+    { "id": "00", "phase": 0, "title": "What is HLD & napkin math", "slug": "what-is-hld", "notesPath": "notes/00-what-is-hld.md", "quizPath": "quizzes/00-what-is-hld.md", "level": "2_practiced", "introducedAt": "2026-04-19", "lastPracticedAt": "2026-04-20", "sessionsSeen": 4, "quizScores": [{ "date": "2026-04-19", "type": "mixed-deep", "score": 44, "max": 80 }, { "date": "2026-04-19", "type": "spaced-revision", "score": 2, "max": 2 }, { "date": "2026-04-19", "type": "spaced-revision", "score": 5, "max": 10 }, { "date": "2026-04-20", "type": "spaced-revision", "score": 9, "max": 10 }] },
+    { "id": "01", "phase": 0, "title": "Networking primer", "slug": "networking-primer", "notesPath": "notes/01-networking-primer.md", "quizPath": "quizzes/01-networking-primer.md", "level": "1_intro", "introducedAt": "2026-04-19", "lastPracticedAt": "2026-04-20", "sessionsSeen": 3, "quizScores": [{ "date": "2026-04-19", "type": "mixed-deep-part1", "score": 40, "max": 80 }, { "date": "2026-04-19", "type": "mixed-deep-part2-and-part3", "score": 43, "max": 80 }, { "date": "2026-04-20", "type": "mixed-deep-consolidation", "score": 44, "max": 90 }] },
     { "id": "02", "phase": 1, "title": "SQL internals", "slug": "sql-internals", "notesPath": "notes/02-sql-internals.md", "quizPath": "quizzes/02-sql-internals.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
     { "id": "03", "phase": 1, "title": "NoSQL landscape", "slug": "nosql-landscape", "notesPath": "notes/03-nosql-landscape.md", "quizPath": "quizzes/03-nosql-landscape.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
     { "id": "04", "phase": 1, "title": "Replication", "slug": "replication", "notesPath": "notes/04-replication.md", "quizPath": "quizzes/04-replication.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
