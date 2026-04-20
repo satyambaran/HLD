@@ -1,0 +1,5 @@
+- [User role](user_role.md) — backend eng ~4yr, targeting SDE-2/Senior interviews, HLD baseline = shallow/buzzwords, wants deep + mixed quiz formats
+- [HLD learning project](project_hld_learning_system.md) — self-paced system, guide.md is the constitution, state.json is source of truth, 8 slash commands live in .claude/commands
+- [Quiz log format](feedback_quiz_log_format.md) — every quiz log entry needs full question text + learner's verbatim answer, not summaries
+- [Quiz teaching density](feedback_quiz_teaching_density.md) — never quiz on a mechanism that was only name-dropped; teach with internals first, then test
+- [Persist chat to disk](feedback_persist_chat_to_disk.md) — every substantive teaching/quiz/deep-dive delivered in chat must be saved to notes/quizzes file in the same turn — never wait to be asked

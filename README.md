@@ -8,27 +8,47 @@ A Claude Code–driven learning system. You show up, run a slash command, and Cl
 
 ## 🚀 First-time setup (one minute)
 
-1. **Open the workspace in VSCode:**
+1. **Open the workspace in VSCode** (substitute your clone path):
    ```bash
-   code /Users/satyambaran/Documents/HLD/HLD.code-workspace
+   code <path-to-clone>/HLD.code-workspace
    ```
 
-2. **When VSCode prompts "Install recommended extensions?" → click Install All.** You'll get:
+2. **Wire Claude's auto-memory to the repo (one-time, per machine):**
+   ```bash
+   ./scripts/setup-memory.sh
+   ```
+   This symlinks Claude Code's per-project memory directory (`~/.claude/projects/<id>/memory/`) to this repo's `.claude/memory/` so feedback memories, user notes, and project context travel with the repo across machines. Idempotent — safe to re-run.
+
+3. **When VSCode prompts "Install recommended extensions?" → click Install All.** You'll get:
    - `bierner.markdown-mermaid` — renders architecture diagrams inline
    - `yzhang.markdown-all-in-one` — TOC, checkboxes, shortcuts
    - `bpruitt-goddard.mermaid-markdown-syntax-highlighting` — colored Mermaid code
    - `davidanson.vscode-markdownlint` — keeps notes tidy
    - `anthropic.claude-code` — the CLI as a sidebar
 
-3. **Open the Claude Code panel** (Cmd+Esc in VSCode, or run `claude` in the terminal inside this folder).
+4. **Open the Claude Code panel** (Cmd+Esc in VSCode, or run `claude` in the terminal inside this folder).
 
-4. **Run your first session:**
+5. **Run your first session:**
    ```
    /hld-next
    ```
    Claude will ask how much time you have, then teach topic `00` and quiz you.
 
 That's it. Come back tomorrow and run `/hld-resume` instead.
+
+### Working across multiple machines
+
+Everything Claude needs — notes, quizzes, `state.json`, `roadmap.md`, and Claude's auto-memory (`.claude/memory/`) — lives in this repo and travels via git. On each new machine, run `./scripts/setup-memory.sh` once.
+
+**Daily discipline (mandatory to avoid merge conflicts on `state.json`):**
+
+```bash
+git pull                                       # BEFORE starting a session
+# …run /hld-next or /hld-resume with Claude…
+git add . && git commit -m "HLD: <topic>" && git push   # AFTER wrapping
+```
+
+`state.json` and memory files change every session — skipping `git pull` on the second laptop will force you to hand-resolve JSON conflicts.
 
 ---
 
@@ -49,8 +69,13 @@ HLD/
 ├── .vscode/
 │   └── extensions.json   ← recommended extensions
 │
+├── scripts/
+│   └── setup-memory.sh   ← one-time per-machine: symlinks Claude memory into the repo
+│
 └── .claude/
-    └── commands/         ← slash commands that power the workflow
+    ├── commands/         ← slash commands that power the workflow
+    └── memory/           ← Claude's auto-memory (user role, feedback, project context)
+                            symlinked from ~/.claude/projects/<id>/memory/ via setup script
 ```
 
 ---

@@ -16,7 +16,6 @@
       "guide.md": "HLD.code-workspace"
     },
     "workbench.tree.indent": 16,
-    "markdown.extension.toc.updateOnSave": true
   },
   "extensions": {
     "recommendations": [

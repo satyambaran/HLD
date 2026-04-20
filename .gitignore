@@ -1,0 +1,25 @@
+# macOS noise
+.DS_Store
+._*
+
+# Editor swap / temp files
+*.swp
+*.swo
+*~
+.vscode/*.log
+
+# Claude Code runtime (never commit these)
+.claude/settings.local.json
+
+# ──────────────────────────────────────────────────────────
+# Defensive: never ignore Claude's memory or commands, even if
+# a future .gitignore template or global ignore tries to sweep
+# away all of .claude/. These directories are the project's
+# source of truth for Claude's behavior and persisted memory
+# and MUST travel with the repo.
+# ──────────────────────────────────────────────────────────
+!.claude/
+!.claude/commands/
+!.claude/commands/**
+!.claude/memory/
+!.claude/memory/**

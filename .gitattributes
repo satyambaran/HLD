@@ -1,0 +1,6 @@
+# Keep shell scripts LF-only so they stay executable on every platform.
+*.sh text eol=lf
+
+# Treat JSON/markdown as text (default) but pin LF to avoid noisy cross-OS diffs.
+*.json text eol=lf
+*.md   text eol=lf
