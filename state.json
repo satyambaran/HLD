@@ -13,9 +13,9 @@
     "3_confident": "Confident — 75-89% scenario-heavy",
     "4_interview_ready": "Interview-ready — 90%+ with defended follow-ups"
   },
-  "currentTopicId": "01",
-  "lastSession": "2026-04-20",
-  "revisionQueue": [],
+  "currentTopicId": "02",
+  "lastSession": "2026-05-01",
+  "revisionQueue": ["01"],
   "sessionHistory": [
     {
       "date": "2026-04-19",
@@ -65,12 +65,49 @@
         "Weakest: Q4 WebSocket graceful deploy (3/10 — invented app-level JSON instead of naming Close frame 0x8 / code 1001 Going Away), Q8 Anycast (3/10 — completely missed the industry-standard BGP-based failover mechanism), Q5 H1.1 in mesh (4/10 — named HoL blocking, missed the dominant reason: L4 LB granularity with H/2 pinning).",
         "Pattern still leaking: named-mechanism vs scenario-words. Q3 conflated QUIC connection migration with 0-RTT resumption; Q4 invented JSON frame; Q8 gestured at 'resolver should signal' instead of naming Anycast. Immediate next: /hld-deepdive 01 targeting Anycast/BGP, WebSocket Close frames + graceful deploy mechanics, and service-mesh LB granularity."
       ]
+    },
+    {
+      "date": "2026-04-22",
+      "command": "/hld-next",
+      "topicIds": ["02"],
+      "durationBucket": "standard",
+      "summaryBullets": [
+        "Taught topic 02 Part 1 of 3: SQL Internals — page-oriented storage, heap vs clustered, B+-tree internals.",
+        "Covered: fixed-size pages (Postgres 8KB / InnoDB 16KB), heap-organized (Postgres) vs clustered/index-organized (InnoDB), B+-tree fanout math (log_B N ≈ 4 levels for 1B rows), covering indexes + visibility map caveat, UUID v4 vs v7 PK impact, fillfactor.",
+        "Notes written to notes/02-sql-internals.md. No quiz conducted this session (notes-only)."
+      ]
+    },
+    {
+      "date": "2026-04-29",
+      "command": "/hld-next",
+      "topicIds": ["02"],
+      "durationBucket": "standard",
+      "summaryBullets": [
+        "Taught topic 02 Part 2 of 3: WAL + MVCC + Isolation Levels.",
+        "Covered: WAL invariant + ARIES (1992), group commit, checkpointing, full-page writes; Postgres heap-MVCC (xmin/xmax, dead tuples, VACUUM, XID wraparound), InnoDB undo-MVCC (in-place update, undo log, purge thread); HOT updates + fillfactor; isolation anomalies (dirty read, non-repeatable, phantom, lost update, write skew); Postgres SSI vs InnoDB 2PL for SERIALIZABLE.",
+        "Notes written to notes/02-sql-internals-part2.md. No quiz conducted this session (notes-only)."
+      ]
+    },
+    {
+      "date": "2026-05-01",
+      "command": "/hld-next",
+      "topicIds": ["02", "01"],
+      "durationBucket": "deep",
+      "summaryBullets": [
+        "Taught topic 02 Part 3 of 3: Query Planner + Locks + Concurrency.",
+        "Covered: query pipeline (parse→plan→execute), Volcano pull model, column statistics (pg_stats, MCV, histogram, correlation, multi-column statistics), cost model (seq/random_page_cost, NVMe tuning to 1.1), plan nodes (Seq Scan vs Index Scan vs Bitmap Heap Scan vs Index Only Scan), join methods (Nested Loop vs Hash Join vs Merge Join), EXPLAIN ANALYZE reading, BRIN indexes, OLTP vs OLAP storage mismatch, Postgres table + row lock modes (8 table modes, 4 row modes), InnoDB record/gap/next-key locks, deadlock detection (Postgres timeout vs InnoDB wait-for graph), SKIP LOCKED job queue pattern, advisory locks, optimistic vs pessimistic locking.",
+        "Topic 01 added to revisionQueue (1_intro, not practiced in 3+ sessions).",
+        "Quiz completed: 10 Qs (8 topic 02, 1 topic 01 spaced revision, 1 mid-quiz isolation-level deep-dive). Final 32/100 (32%) → topic 02 stays 1_intro.",
+        "Mid-quiz deep-dive on isolation levels triggered (Q4 confusion). Full anomaly × level breakdown with real-world scenarios added to notes/02-sql-internals-part2.md.",
+        "Strongest: Q2 HOT mechanics (6/10), Q8 group commit (7/10). Weakest: Q3 EXPLAIN stale stats (1/10 — pattern-matched low-cardinality instead of reading rows=2 vs actual=47000), Q9 atomic UPDATE vs race condition (0/10 — picked A over B), Q10 networking spaced revision (0/10 — no attempt).",
+        "Recurring pattern: partial answers — names the right concept but stops before naming the mechanism, the math, or the fix. Q7 named deadlock correctly but proposed SKIP LOCKED as prevention instead of consistent lock ordering."
+      ]
     }
   ],
   "topics": [
     { "id": "00", "phase": 0, "title": "What is HLD & napkin math", "slug": "what-is-hld", "notesPath": "notes/00-what-is-hld.md", "quizPath": "quizzes/00-what-is-hld.md", "level": "2_practiced", "introducedAt": "2026-04-19", "lastPracticedAt": "2026-04-20", "sessionsSeen": 4, "quizScores": [{ "date": "2026-04-19", "type": "mixed-deep", "score": 44, "max": 80 }, { "date": "2026-04-19", "type": "spaced-revision", "score": 2, "max": 2 }, { "date": "2026-04-19", "type": "spaced-revision", "score": 5, "max": 10 }, { "date": "2026-04-20", "type": "spaced-revision", "score": 9, "max": 10 }] },
     { "id": "01", "phase": 0, "title": "Networking primer", "slug": "networking-primer", "notesPath": "notes/01-networking-primer.md", "quizPath": "quizzes/01-networking-primer.md", "level": "1_intro", "introducedAt": "2026-04-19", "lastPracticedAt": "2026-04-20", "sessionsSeen": 3, "quizScores": [{ "date": "2026-04-19", "type": "mixed-deep-part1", "score": 40, "max": 80 }, { "date": "2026-04-19", "type": "mixed-deep-part2-and-part3", "score": 43, "max": 80 }, { "date": "2026-04-20", "type": "mixed-deep-consolidation", "score": 44, "max": 90 }] },
-    { "id": "02", "phase": 1, "title": "SQL internals", "slug": "sql-internals", "notesPath": "notes/02-sql-internals.md", "quizPath": "quizzes/02-sql-internals.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
+    { "id": "02", "phase": 1, "title": "SQL internals", "slug": "sql-internals", "notesPath": "notes/02-sql-internals.md", "quizPath": "quizzes/02-sql-internals.md", "level": "1_intro", "introducedAt": "2026-04-22", "lastPracticedAt": "2026-05-02", "sessionsSeen": 4, "quizScores": [{ "date": "2026-05-02", "type": "mixed-deep-all-parts", "score": 32, "max": 100 }] },
     { "id": "03", "phase": 1, "title": "NoSQL landscape", "slug": "nosql-landscape", "notesPath": "notes/03-nosql-landscape.md", "quizPath": "quizzes/03-nosql-landscape.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
     { "id": "04", "phase": 1, "title": "Replication", "slug": "replication", "notesPath": "notes/04-replication.md", "quizPath": "quizzes/04-replication.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },
     { "id": "05", "phase": 1, "title": "Partitioning & sharding", "slug": "partitioning", "notesPath": "notes/05-partitioning.md", "quizPath": "quizzes/05-partitioning.md", "level": "0_untouched", "introducedAt": null, "lastPracticedAt": null, "sessionsSeen": 0, "quizScores": [] },

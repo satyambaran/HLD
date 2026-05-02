@@ -12,7 +12,7 @@
 
 ## Phase 1 — Storage
 
-- [ ] **02** · [SQL internals](notes/02-sql-internals.md) — B-tree indexes, WAL, MVCC, isolation levels, query planner
+- [~] **02** · [SQL internals](notes/02-sql-internals.md) — B-tree indexes, WAL, MVCC, isolation levels, query planner *(All 3 parts taught. First quiz 32/100 (32%) → 1_intro. Weak: EXPLAIN stale-stats diagnosis, atomic-UPDATE vs race condition, H2 multiplexing blast radius. Mid-quiz deep-dive on isolation anomalies added to Part 2 notes.)*
 - [ ] **03** · [NoSQL landscape](notes/03-nosql-landscape.md) — KV, document, column-family, graph — when each wins
 - [ ] **04** · [Replication](notes/04-replication.md) — sync vs async, leader-follower, multi-leader, leaderless (Dynamo-style)
 - [ ] **05** · [Partitioning & sharding](notes/05-partitioning.md) — range, hash, consistent hashing, hotspot mitigation

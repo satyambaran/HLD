@@ -3,3 +3,4 @@
 - [Quiz log format](feedback_quiz_log_format.md) — every quiz log entry needs full question text + learner's verbatim answer, not summaries
 - [Quiz teaching density](feedback_quiz_teaching_density.md) — never quiz on a mechanism that was only name-dropped; teach with internals first, then test
 - [Persist chat to disk](feedback_persist_chat_to_disk.md) — every substantive teaching/quiz/deep-dive delivered in chat must be saved to notes/quizzes file in the same turn — never wait to be asked
+- [One file per topic/part](feedback_one_file_per_topic_part.md) — every topic and every part of a multi-part topic gets its own notes file (`notes/<id>-<slug>-partN.md`); never append
